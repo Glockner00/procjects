@@ -9,10 +9,11 @@ import com.chess.engine.board.Move;
 import com.chess.engine.board.Tile;
 import com.chess.engine.board.Move.AttackMove;
 import com.chess.engine.board.Move.MajorMove;
+import com.chess.engine.pieces.Piece.pieceType;
 import com.google.common.collect.ImmutableList;
 
 public class King extends Piece{
-	King(int piecePosition, Alliance pieceAlliance) {
+	public King(final Alliance pieceAlliance, final int piecePosition) {
 		super(piecePosition, pieceAlliance);
 	}
 	private final static int[] CANDIDATE_MOVE_COORDINATES = { -9, -8, -7, -1, 1, 7, 8, 9};
@@ -47,6 +48,10 @@ public class King extends Piece{
 			}
 		}
 		return ImmutableList.copyOf(legalMoves);
+	}
+	@Override
+	public String toString() {
+		return pieceType.KING.toString();
 	}
 	private static boolean isFirstColumnExclusion(final int currentPosition, final int candidateOffset) {
 		//if current position is in the first column and has a valid move ( valid offset) -> return true.

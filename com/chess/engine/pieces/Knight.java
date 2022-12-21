@@ -9,6 +9,7 @@ import com.chess.engine.board.BoardUtils;
 import com.chess.engine.board.Move;
 import com.chess.engine.board.Move.AttackMove;
 import com.chess.engine.board.Move.MajorMove;
+import com.chess.engine.pieces.Piece.pieceType;
 import com.chess.engine.board.Tile;
 import com.google.common.collect.ImmutableList;
 
@@ -17,7 +18,7 @@ public class Knight extends Piece {
 	 * all legal moves for a knight
 	 */
 	private final static int[] CANDIDATE_MOVE_COORDINATES = {-17, -15, -10 ,-6, 6, 10, 15, 17};
-	Knight(final int piecePosition, final Alliance pieceAlliance) {
+	public Knight(final Alliance pieceAlliance, final int piecePosition) {
 		super(piecePosition, pieceAlliance);
 	}
 		@Override
@@ -55,6 +56,10 @@ public class Knight extends Piece {
 				}
 			}
 			return ImmutableList.copyOf(legalMoves);
+		}
+		@Override
+		public String toString() {
+			return pieceType.KNIGHT.toString();
 		}
 		private static boolean isFirstColumnExclusion(final int currentPosition, final int candidateOffset) {
 			//if current position is in the first column and has a valid move ( valid offset) -> return true.

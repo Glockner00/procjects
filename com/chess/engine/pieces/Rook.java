@@ -9,11 +9,12 @@ import com.chess.engine.board.Move;
 import com.chess.engine.board.Tile;
 import com.chess.engine.board.Move.AttackMove;
 import com.chess.engine.board.Move.MajorMove;
+import com.chess.engine.pieces.Piece.pieceType;
 import com.google.common.collect.ImmutableList;
 
 public class Rook extends Piece {
 	private final static int[] CANDIDATE_MOVE_VECTOR_COORDINATES = { -8, -1, 1, 8 };
-	Rook(int piecePosition, Alliance pieceAlliance) {
+	public Rook(final Alliance pieceAlliance,final int piecePosition) {
 		super(piecePosition, pieceAlliance);
 	}
 	@Override
@@ -58,6 +59,10 @@ public class Rook extends Piece {
 			}
 		}		
 		return ImmutableList.copyOf(legalMoves);
+	}
+	@Override
+	public String toString() {
+		return pieceType.ROOK.toString();
 	}
 	private static boolean isFirstColumnExclusion(final int currentPosition, final int candidateOffset) {
 		return BoardUtils.FIRST_COLUMN[currentPosition] && (candidateOffset == -1);
