@@ -32,7 +32,6 @@ public abstract class Piece {
 	public PieceType getPieceType() {
 		return this.pieceType;
 	}
-	
 	/**
 	 * takes a given board and for the given piece calculates that pieces legal moves
 	 * for each concrete piece we will override this method.	
@@ -40,7 +39,7 @@ public abstract class Piece {
 	 * @return
 	 */
 	public abstract Collection<Move> calculateLegalMoves(final Board board);
-	
+
 	public enum PieceType{
 		PAWN("P") {
 			@Override

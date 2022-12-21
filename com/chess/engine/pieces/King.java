@@ -51,7 +51,7 @@ public class King extends Piece{
 	}
 	@Override
 	public String toString() {
-		return pieceType.KING.toString();
+		return PieceType.KING.toString();
 	}
 	private static boolean isFirstColumnExclusion(final int currentPosition, final int candidateOffset) {
 		//if current position is in the first column and has a valid move ( valid offset) -> return true.

@@ -61,7 +61,7 @@ public class Bishop extends Piece{
 	}
 	@Override
 	public String toString() {
-		return pieceType.BISHOP.toString();
+		return PieceType.BISHOP.toString();
 	}
 	
 	private static boolean isFirstColumnExclusion(final int currentPosition, final int candidateOffset) {

@@ -1,5 +1,6 @@
 package com.chess.engine.board;
 import java.util.ArrayList;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +15,7 @@ import com.chess.engine.pieces.Piece; // has a Piece
 import com.chess.engine.pieces.Queen;
 import com.chess.engine.pieces.Rook;
 import com.chess.engine.player.BlackPlayer;
+import com.chess.engine.player.Player; //has a player
 import com.chess.engine.player.WhitePlayer;
 import com.google.common.collect.ImmutableList;
 
@@ -23,20 +25,21 @@ public class Board {
 	private final Collection<Piece> blackPieces;
 	private final WhitePlayer whitePlayer;
 	private final BlackPlayer blackPlayer;
-	
-	
+	private final Player currentPlayer;
+
 	private Board(Builder builder) {
 		this.gameBoard = createGameBoard(builder);
 		this.whitePieces = calculateActivePieces(this.gameBoard, Alliance.WHITE);
 		this.blackPieces = calculateActivePieces(this.gameBoard, Alliance.BLACK);
+		
 		final Collection<Move> whiteStandardLegalMoves = calculateLegalMoves(this.whitePieces);
 		final Collection<Move> blackStandardLegalMoves = calculateLegalMoves(this.blackPieces);
 		
 		this.whitePlayer = new WhitePlayer(this, whiteStandardLegalMoves, blackStandardLegalMoves);
 		this.blackPlayer = new BlackPlayer(this, whiteStandardLegalMoves, blackStandardLegalMoves);
 		
+		this.currentPlayer = null;
 	}
-
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
@@ -50,15 +53,26 @@ public class Board {
 		return builder.toString();
 	}
 	
+	public Player whitePlayer() {
+		return this.whitePlayer;
+	}
+	
+	public Player blackPlayer() {
+		return this.blackPlayer;
+	}
+	
+	public Player currentPlayer() {
+		return this.currentPlayer;
+	}
+	
 	public Collection<Piece> getBlackPieces(){
 		return this.blackPieces;
 	}
+	
 	public Collection<Piece> getWhitePieces(){
 		return this.whitePieces;
 	}
-	
 	/**
-	 * 
 	 * calculate legal moves for an alliance
 	 * @param pieces
 	 * @return arrayList of legalMoves

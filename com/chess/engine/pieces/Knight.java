@@ -59,7 +59,7 @@ public class Knight extends Piece {
 		}
 		@Override
 		public String toString() {
-			return pieceType.KNIGHT.toString();
+			return PieceType.KNIGHT.toString();
 		}
 		private static boolean isFirstColumnExclusion(final int currentPosition, final int candidateOffset) {
 			//if current position is in the first column and has a valid move ( valid offset) -> return true.
