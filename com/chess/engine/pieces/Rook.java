@@ -9,13 +9,12 @@ import com.chess.engine.board.Move;
 import com.chess.engine.board.Tile;
 import com.chess.engine.board.Move.AttackMove;
 import com.chess.engine.board.Move.MajorMove;
-import com.chess.engine.pieces.Piece.pieceType;
 import com.google.common.collect.ImmutableList;
 
 public class Rook extends Piece {
 	private final static int[] CANDIDATE_MOVE_VECTOR_COORDINATES = { -8, -1, 1, 8 };
 	public Rook(final Alliance pieceAlliance,final int piecePosition) {
-		super(piecePosition, pieceAlliance);
+		super(PieceType.ROOK, piecePosition, pieceAlliance);
 	}
 	@Override
 	public Collection<Move> calculateLegalMoves(final Board board) {

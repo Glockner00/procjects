@@ -1,5 +1,6 @@
 package com.chess.engine.pieces;
 import java.util.ArrayList;
+
 import java.util.Collection;
 import java.util.List;
 import com.chess.engine.Alliance;
@@ -7,7 +8,6 @@ import com.chess.engine.board.Board;
 import com.chess.engine.board.BoardUtils;
 import com.chess.engine.board.Move;
 import com.chess.engine.board.Move.MajorMove;
-import com.chess.engine.pieces.Piece.pieceType;
 import com.google.common.collect.ImmutableList;
 /**
  * Capture directionality? -> -8 || 8
@@ -15,7 +15,7 @@ import com.google.common.collect.ImmutableList;
 public class Pawn extends Piece {
 	private final static int[] CANDIDATE_MOVE_COORDINATE = { 7, 8, 9, 16 };
 	public Pawn(final Alliance pieceAlliance, final int piecePosition) {
-		super(piecePosition, pieceAlliance);
+		super(PieceType.PAWN, piecePosition, pieceAlliance);
 	}
 	@Override
 	public Collection<Move> calculateLegalMoves(final Board board) {

@@ -1,5 +1,6 @@
 package com.chess.engine.pieces;
 import java.util.ArrayList;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -9,7 +10,6 @@ import com.chess.engine.board.BoardUtils;
 import com.chess.engine.board.Move;
 import com.chess.engine.board.Move.AttackMove;
 import com.chess.engine.board.Move.MajorMove;
-import com.chess.engine.pieces.Piece.pieceType;
 import com.chess.engine.board.Tile;
 import com.google.common.collect.ImmutableList;
 
@@ -19,7 +19,7 @@ public class Knight extends Piece {
 	 */
 	private final static int[] CANDIDATE_MOVE_COORDINATES = {-17, -15, -10 ,-6, 6, 10, 15, 17};
 	public Knight(final Alliance pieceAlliance, final int piecePosition) {
-		super(piecePosition, pieceAlliance);
+		super(PieceType.KNIGHT, piecePosition, pieceAlliance);
 	}
 		@Override
 		public Collection<Move> calculateLegalMoves(final Board board) {
