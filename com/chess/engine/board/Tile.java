@@ -48,16 +48,6 @@ public abstract class Tile {
 	 * 
 	 * @return
 	 */
-	private static Map<Integer, EmptyTile> createAllPossibleEmptyTiles() {
-		final Map<Integer, EmptyTile> emptyTileMap = new HashMap<>();
-		for(int i=0; i<BoardUtils.NUM_TILES; i++) {
-			emptyTileMap.put(i, new EmptyTile(i));
-		}
-		/*
-		 * Cannot be mutated.
-		 */
-		return ImmutableMap.copyOf(emptyTileMap);
-	}
 	/**
 	 * checks if tile is occupied
 	 * @return boolean
@@ -68,6 +58,23 @@ public abstract class Tile {
 	 * @return Piece or Null
 	 */
 	public abstract Piece getPiece();
+	
+	public int getTileCoordinate() {
+		return this.tileCoordinate;
+	}
+	
+	private static Map<Integer, EmptyTile> createAllPossibleEmptyTiles() {
+		final Map<Integer, EmptyTile> emptyTileMap = new HashMap<>();
+		for(int i=0; i<BoardUtils.NUM_TILES; i++) {
+			emptyTileMap.put(i, new EmptyTile(i));
+		}
+		/*
+		 * Cannot be mutated.
+		 */
+		return ImmutableMap.copyOf(emptyTileMap);
+	}
+	
+
 	
 	public static final class EmptyTile extends Tile {
 		EmptyTile(final int coordinate){

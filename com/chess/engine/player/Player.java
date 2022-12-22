@@ -10,21 +10,27 @@ import com.chess.engine.board.Move;
 import com.chess.engine.pieces.King;
 import com.chess.engine.pieces.Piece;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 public abstract class Player {
 	protected final Board board;
 	protected final King playerKing;
 	protected final Collection<Move> legalMoves;
 	private boolean isInCheck;
 
-	Player(final Board board, final Collection<Move> legalMoves, final Collection<Move> opponentMoves){
+	Player(final Board board, 
+		   final Collection<Move> legalMoves, 
+		   final Collection<Move> opponentMoves){
+		
 		this.board = board;
 		this.playerKing = establishKing();
-		this.legalMoves = legalMoves;
+		this.legalMoves = ImmutableList.copyOf(Iterables.concat(legalMoves, calculateKingCastles(legalMoves, opponentMoves)));
 		//does the opponents moves the players KingPosition? --> get all those different attacks
 		//is that not empty?? --> current player is in check.
 		this.isInCheck = !Player.calculateAttacksOnTile(this.playerKing.getPiecePosition(),
 				opponentMoves).isEmpty();
 	}
+	
+	
 	
 	public King getPlayerKing() {
 		return this.playerKing;

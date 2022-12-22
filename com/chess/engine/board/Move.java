@@ -3,14 +3,12 @@ import com.chess.engine.board.Board.Builder;
 import com.chess.engine.pieces.Pawn;
 import com.chess.engine.pieces.Piece;
 import com.chess.engine.pieces.Rook;
-
 /**
  * Materialze a new board into existens that represents the board that would exist if you made a move on the incomming board.
  * @author axelg
  *
  */
-
-public abstract class Move {
+	public abstract class Move {
 	final Board board;
 	final Piece movedPiece;
 	final int destinationCoordinate;
@@ -175,8 +173,6 @@ public abstract class Move {
 							final int destinationCoordinate) {
 				super(board, movedPiece, destinationCoordinate);
 			}
-			
-			
 			@Override
 			public Board execute() {
 				final Builder builder = new Builder();
@@ -286,7 +282,6 @@ public abstract class Move {
 			private MoveFactory() {
 				throw new RuntimeException("Not Instantiable");
 			}
-			
 			//given a board and a from-to cooridnate
 			//return the move that is avalible at that board.
 			public static Move createMove(final Board board,
@@ -300,7 +295,5 @@ public abstract class Move {
 				}
 				return NULL_MOVE;
 			}
-			
 		}
-	
 } 
