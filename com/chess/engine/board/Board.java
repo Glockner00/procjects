@@ -161,6 +161,8 @@ public class Board {
 		builder.setPiece(new Bishop(Alliance.WHITE, 61));
 		builder.setPiece(new Knight(Alliance.WHITE, 62));
 		builder.setPiece(new Rook(Alliance.WHITE, 63));
+		
+		builder.setMoveMaker(Alliance.WHITE);
 
 		return builder.build();
 	}
@@ -183,7 +185,7 @@ public class Board {
 			this.boardConfig.put(piece.getPiecePosition(), piece);
 			return this;
 		}
-		public Builder setMoveMaker(final Alliance alliance) {
+		public Builder setMoveMaker(final Alliance nextMoveMaker) {
 			this.nextMoveMaker = nextMoveMaker;
 			return this;
 		}
@@ -193,8 +195,6 @@ public class Board {
 		}
 		public void setEnPassantPawn(Pawn enPassantPawn) {
 			this.enPassantPawn = enPassantPawn;
-			// TODO Auto-generated method stub
-			
 		}
 	}
 		
