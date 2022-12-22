@@ -37,7 +37,7 @@ public abstract class Player {
 	//does the enemies move overlapp with the playerKings cooridinate??
 	//if it does it is attacking the king.
 	//returns all attacking moves.
-	private static Collection<Move> calculateAttacksOnTile(final int piecePosition, 
+	protected static Collection<Move> calculateAttacksOnTile(final int piecePosition, 
 			final Collection<Move> moves) {
 		final List<Move> attackMoves = new ArrayList<>();
 		for(final Move move : moves) {
@@ -125,5 +125,7 @@ public abstract class Player {
 	public abstract Collection<Piece> getActivePieces();
 	public abstract Alliance getAlliance();
 	public abstract Player getOpponent();
+	protected abstract Collection<Move> calculateKingCastles(Collection<Move> playerLegals, Collection<Move> opponentsLegals); 
+	
 	
 }
