@@ -53,6 +53,12 @@ public class King extends Piece{
 	public String toString() {
 		return PieceType.KING.toString();
 	}
+	
+	@Override
+	//returns the king to its new position.
+	public King movePiece(Move move) {
+		return new King(move.getMovedPiece().getPieceAlliance(), move.getDestinationCoordinate());
+	}
 	private static boolean isFirstColumnExclusion(final int currentPosition, final int candidateOffset) {
 		//if current position is in the first column and has a valid move ( valid offset) -> return true.
 		return BoardUtils.FIRST_COLUMN[currentPosition] && (candidateOffset == -9 || candidateOffset == -1 

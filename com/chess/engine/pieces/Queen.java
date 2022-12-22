@@ -64,6 +64,11 @@ public class Queen extends Piece{
 	public String toString() {
 		return PieceType.QUEEN.toString();
 	}
+	@Override
+	//returns the Queen to its new position.
+	public Queen movePiece(Move move) {
+		return new Queen(move.getMovedPiece().getPieceAlliance(), move.getDestinationCoordinate());
+	}
 	private static boolean isFirstColumnExclusion(final int currentPosition, final int candidateOffset) {
 		return BoardUtils.FIRST_COLUMN[currentPosition] && (candidateOffset == -9  || candidateOffset == -1
 				|| candidateOffset == 7);

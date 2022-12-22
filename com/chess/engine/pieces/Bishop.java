@@ -63,6 +63,11 @@ public class Bishop extends Piece{
 	public String toString() {
 		return PieceType.BISHOP.toString();
 	}
+	@Override
+	//returns the bishop to its new position.
+	public Bishop movePiece(Move move) {
+		return new Bishop(move.getMovedPiece().getPieceAlliance(), move.getDestinationCoordinate());
+	}
 	
 	private static boolean isFirstColumnExclusion(final int currentPosition, final int candidateOffset) {
 		return BoardUtils.FIRST_COLUMN[currentPosition] && (candidateOffset == -9 || candidateOffset == 7);
@@ -70,4 +75,5 @@ public class Bishop extends Piece{
 	private static boolean isEighthColumnExclusion(final int currentPosition, final int candidateOffset) {
 		return BoardUtils.EIGHTH_COLUMN[currentPosition] && (candidateOffset == -7 || candidateOffset == 9);
 	}
+
 }

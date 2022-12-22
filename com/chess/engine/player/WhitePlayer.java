@@ -9,8 +9,8 @@ import com.chess.engine.pieces.Piece;
 
 public class WhitePlayer extends Player{
 
-	public WhitePlayer(Board board, Collection<Move> whiteStandardLegalMoves,
-			Collection<Move> blackStandardLegalMoves) {
+	public WhitePlayer(final Board board, final Collection<Move> whiteStandardLegalMoves,
+			final Collection<Move> blackStandardLegalMoves) {
 		//board leaglMoves opponentsMoves
 		super(board, whiteStandardLegalMoves, blackStandardLegalMoves);
 	}

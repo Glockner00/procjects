@@ -61,6 +61,11 @@ public class Knight extends Piece {
 		public String toString() {
 			return PieceType.KNIGHT.toString();
 		}
+		@Override
+		//returns the knight to its new position.
+		public Knight movePiece(Move move) {
+			return new Knight(move.getMovedPiece().getPieceAlliance(), move.getDestinationCoordinate());
+		}
 		private static boolean isFirstColumnExclusion(final int currentPosition, final int candidateOffset) {
 			//if current position is in the first column and has a valid move ( valid offset) -> return true.
 			return BoardUtils.FIRST_COLUMN[currentPosition] && (candidateOffset == -17 || candidateOffset == -10 
