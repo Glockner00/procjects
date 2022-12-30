@@ -1,4 +1,4 @@
-package com.chess.engine.pieces;
+	package com.chess.engine.pieces;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -15,8 +15,14 @@ public class Rook extends Piece {
 	private final static int[] CANDIDATE_MOVE_VECTOR_COORDINATES = { -8, -1, 1, 8 };
 	public Rook(final Alliance pieceAlliance,
 			    final int piecePosition) {
-		super(PieceType.ROOK, piecePosition, pieceAlliance);
+		super(PieceType.ROOK, piecePosition, pieceAlliance, true);
 	}
+	public Rook(final Alliance pieceAlliance,
+				final int piecePosition,
+				final boolean isFirstMove) {
+		super(PieceType.ROOK, piecePosition, pieceAlliance, isFirstMove);
+	}
+	
 	@Override
 	public Collection<Move> calculateLegalMoves(final Board board) {
 		final List<Move> legalMoves = new ArrayList<>();		

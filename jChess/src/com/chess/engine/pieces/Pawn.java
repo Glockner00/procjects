@@ -8,6 +8,8 @@ import com.chess.engine.board.Board;
 import com.chess.engine.board.BoardUtils;
 import com.chess.engine.board.Move;
 import com.chess.engine.board.Move.MajorMove;
+import com.chess.engine.board.Move.PawnAttackMove;
+import com.chess.engine.board.Move.PawnJump;
 import com.google.common.collect.ImmutableList;
 /**
  * Capture directionality? -> -8 || 8
@@ -15,7 +17,10 @@ import com.google.common.collect.ImmutableList;
 public class Pawn extends Piece {
 	private final static int[] CANDIDATE_MOVE_COORDINATE = { 7, 8, 9, 16 };
 	public Pawn(final Alliance pieceAlliance, final int piecePosition) {
-		super(PieceType.PAWN, piecePosition, pieceAlliance);
+		super(PieceType.PAWN, piecePosition, pieceAlliance, true);
+	}
+	public Pawn(final Alliance pieceAlliance, final int piecePosition, final boolean isFirstMove) {
+		super(PieceType.PAWN, piecePosition, pieceAlliance, isFirstMove);
 	}
 	@Override
 	public Collection<Move> calculateLegalMoves(final Board board) {
@@ -34,14 +39,14 @@ public class Pawn extends Piece {
 				legalMoves.add(new MajorMove(board, this, candidateDestinationCoordinate));
 				//first move? jump two steps forward if tiles are not occupied.
 			}else if(currentCandidateOffset== 16 && this.isFirstMove() && 
-					(BoardUtils.SEVENTH_RANK[this.piecePosition] && this.getPieceAlliance().isBlack()) || 
-					((BoardUtils.SEVENTH_RANK[this.piecePosition] && this.getPieceAlliance().isWhite()))) {
+					((BoardUtils.SEVENTH_RANK[this.piecePosition] && this.getPieceAlliance().isBlack()) || 
+					(BoardUtils.SECOND_RANK[this.piecePosition] && this.getPieceAlliance().isWhite()))) {
 				final int behindCandidateDestinationCoordiante = this.piecePosition + (this.pieceAlliance.getDirection() * 8);
 				//is the square behind the destinationsTile occupied?
 				if(!board.getTile(behindCandidateDestinationCoordiante).isTileOccupied() && 
 				   !board.getTile(candidateDestinationCoordinate).isTileOccupied()) {
 					//
-					legalMoves.add(new MajorMove(board, this, candidateDestinationCoordinate));	
+					legalMoves.add(new PawnJump(board, this, candidateDestinationCoordinate));	
 				}
 			//attacking move, Stepping 7 for white or black does not work in the first or eighth Column.
 			}else if(currentCandidateOffset == 7 &&
@@ -54,15 +59,20 @@ public class Pawn extends Piece {
 					//if they are enemies
 					if(this.pieceAlliance!=pieceOnCandidate.getPieceAlliance()) {
 						//TODO: More to do. Attacking 
-						legalMoves.add(new MajorMove(board, this, candidateDestinationCoordinate));	
+						legalMoves.add(new PawnAttackMove(board, this, candidateDestinationCoordinate, pieceOnCandidate));	
 					}
 				}
 			//attacking move, stepping 9 for black or white in these columns does not work.
 			}else if(currentCandidateOffset == 9 && 
 					!((BoardUtils.FIRST_COLUMN[this.piecePosition] && this.getPieceAlliance().isWhite() || 
 			         (BoardUtils.EIGHTH_COLUMN[this.piecePosition] && this.getPieceAlliance().isBlack())))) {
-					 //TODO: More to do. Attacking 
-					 legalMoves.add(new MajorMove(board, this, candidateDestinationCoordinate));	
+				if(board.getTile(candidateDestinationCoordinate).isTileOccupied()) {
+					final Piece pieceOnCandidate = board.getTile(candidateDestinationCoordinate).getPiece();
+					if(this.pieceAlliance != pieceOnCandidate.getPieceAlliance()) {
+						//TODO: More to do. Attacking 
+						 legalMoves.add(new PawnAttackMove(board, this, candidateDestinationCoordinate, pieceOnCandidate));
+					}
+				}
 			}
 		}
 		return ImmutableList.copyOf(legalMoves);
