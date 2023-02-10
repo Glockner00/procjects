@@ -16,7 +16,7 @@ PURPLE = (128, 0, 128)
 GREY = (128, 128, 128)
 
 
-class Spot:
+class Tile:
     def __init__(self, row, col, width, total_rows):
         self.row = row
         self.col = col
@@ -77,8 +77,8 @@ def make_grid(rows, width):
     for i in range(rows):
         grid.append([])
         for j in range(rows):
-            spot = Spot(i, j, gap, rows)
-            grid[i].append(spot)
+            tile = Tile(i, j, gap, rows)
+            grid[i].append(tile)
 
     return grid
 
@@ -95,8 +95,8 @@ def draw(win, grid, rows, width):
     win.fill(WHITE)
 
     for row in grid:
-        for spot in row:
-            spot.draw(win)
+        for tile in row:
+            tile.draw(win)
 
     draw_grid(win, rows, width)
     pygame.display.update()
