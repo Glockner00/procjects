@@ -8,7 +8,7 @@ WIDTH = 800
 WIN = pygame.display.set_mode((WIDTH, WIDTH))
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
-BLUE = (0, 255, 0)
+BLUE = (28, 134, 238)
 YELLOW = (255, 255, 0)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -79,7 +79,6 @@ def make_grid(rows, width):
         for j in range(rows):
             tile = Tile(i, j, gap, rows)
             grid[i].append(tile)
-
     return grid
 
 
@@ -93,7 +92,6 @@ def draw_grid(win, rows, width):
 
 def draw(win, grid, rows, width):
     win.fill(WHITE)
-
     for row in grid:
         for tile in row:
             tile.draw(win)
@@ -102,9 +100,21 @@ def draw(win, grid, rows, width):
     pygame.display.update()
 
 
+def mouse_clicked_position(pos, row, width):
+    gap = width // row
+    y, x = pos
+    row = y // gap
+    col = x // gap
+
+    return row, col
+
+
 def main(win, width):
     ROWS = 50
     grid = make_grid(ROWS, width)
+
+    start = None
+    end = None
 
     run = True
     while run:
@@ -112,6 +122,36 @@ def main(win, width):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+            # LEFT CLICK - enter start, end and barriers
+            if pygame.mouse.get_pressed()[0]:
+                pos = pygame.mouse.get_pos()
+                row, col = mouse_clicked_position(pos, ROWS, width)
+                tile = grid[row][col]
+
+                if not start and tile != end:
+                    start = tile
+                    start.make_start()
+
+                if not end and tile != start:
+                    end = tile
+                    end.make_end()
+
+                if tile != end and tile != start:
+                    tile.make_barrier()
+
+            # RIGHT CLICK - reset Tile
+            if pygame.mouse.get_pressed()[2]:
+                pos = pygame.mouse.get_pos()
+                row, col = mouse_clicked_position(pos, ROWS, width)
+                tile = grid[row][col]
+                tile.reset()
+
+                if tile == start:
+                    start = None
+                elif tile == end:
+                    end = None
+
+    pygame.QUIT
 
 
 main(WIN, WIDTH)
