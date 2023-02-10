@@ -2,7 +2,6 @@ import pygame
 import math
 from queue import PriorityQueue
 
-
 # Constants
 WIDTH = 800
 WIN = pygame.display.set_mode((WIDTH, WIDTH))
@@ -17,6 +16,7 @@ GREY = (128, 128, 128)
 
 
 class Tile:
+    # Constructor
     def __init__(self, row, col, width, total_rows):
         self.row = row
         self.col = col
@@ -30,6 +30,7 @@ class Tile:
     def get_pos(self):
         return self.row, self.col
 
+    # Functions that describes a tiles different states.
     def is_closed(self):
         return self.color == RED
 
@@ -66,11 +67,31 @@ class Tile:
     def make_path(self):
         self.color = PURPLE
 
+    # Draw a single tile
     def draw(self, win):
         pygame.draw.rect(win, self.color, (self.x, self.y,
                                            self.width, self.width))
 
+    def update_neighbours(self, grid):
+        pass
 
+
+# Main algorithm.
+def a_star(draw, grid, start, end):
+    pass
+
+
+# Heuristic function for the main algorithm.
+def h(p1, p2):
+    pass
+
+
+# Reconstruct the path.
+def path(previos_tile, current_tile, draw):
+    pass
+
+
+# Make an empty grid.
 def make_grid(rows, width):
     grid = []
     gap = width // rows
@@ -82,6 +103,7 @@ def make_grid(rows, width):
     return grid
 
 
+# Draw the entire grid
 def draw_grid(win, rows, width):
     gap = width // rows
     for i in range(rows):
@@ -90,6 +112,7 @@ def draw_grid(win, rows, width):
             pygame.draw.line(win, GREY, (j * gap, 0), (j * gap, width))
 
 
+# Function that update the current grid with the Tile class.
 def draw(win, grid, rows, width):
     win.fill(WHITE)
     for row in grid:
@@ -100,6 +123,7 @@ def draw(win, grid, rows, width):
     pygame.display.update()
 
 
+# Returns the coordinates that are clicked.
 def mouse_clicked_position(pos, row, width):
     gap = width // row
     y, x = pos
@@ -109,6 +133,7 @@ def mouse_clicked_position(pos, row, width):
     return row, col
 
 
+# Main method.
 def main(win, width):
     ROWS = 50
     grid = make_grid(ROWS, width)
@@ -122,20 +147,24 @@ def main(win, width):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+
             # LEFT CLICK - enter start, end and barriers
             if pygame.mouse.get_pressed()[0]:
                 pos = pygame.mouse.get_pos()
                 row, col = mouse_clicked_position(pos, ROWS, width)
                 tile = grid[row][col]
 
+                # First click
                 if not start and tile != end:
                     start = tile
                     start.make_start()
 
+                # Second click
                 if not end and tile != start:
                     end = tile
                     end.make_end()
 
+                # Third click
                 if tile != end and tile != start:
                     tile.make_barrier()
 
@@ -146,6 +175,7 @@ def main(win, width):
                 tile = grid[row][col]
                 tile.reset()
 
+                # reset start and end
                 if tile == start:
                     start = None
                 elif tile == end:
