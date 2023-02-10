@@ -75,6 +75,11 @@ class Tile:
     def update_neighbours(self, grid):
         pass
 
+    # "less than", compares lt tile and other tile.
+    # The other tile is always going to be greater than lt:s tile
+    def __lt__(self, other):
+        return False
+
 
 # Main algorithm.
 def a_star(draw, grid, start, end):
@@ -82,50 +87,59 @@ def a_star(draw, grid, start, end):
 
 
 # Heuristic function for the main algorithm.
+# Returns the distance between point 1 and point 2 using manhattan distance
 def h(p1, p2):
-    pass
+    x1, y1 = p1
+    x2, y2 = p2
+    return abs(x2 - x1) + abs(y2 - y1)
 
 
 # Reconstruct the path.
-def path(previos_tile, current_tile, draw):
+def path(prev_tile, current_tile, draw):
     pass
 
 
-# Make an empty grid.
+# Make an empty grid. without grid lines.
+# returns a 2D array with tile objects.
 def make_grid(rows, width):
     grid = []
-    gap = width // rows
+    gap = width // rows  # gap between each row/width of each cube.
     for i in range(rows):
-        grid.append([])
+        grid.append([])  # 2D - array
         for j in range(rows):
             tile = Tile(i, j, gap, rows)
             grid[i].append(tile)
     return grid
 
 
-# Draw the entire grid
+# Drawing grey gridlines for the gird.
 def draw_grid(win, rows, width):
-    gap = width // rows
+    gap = width // rows  # width of each cube.
     for i in range(rows):
+
+        # Vertical lines
         pygame.draw.line(win, GREY, (0, i*gap), (width, i * gap))
         for j in range(rows):
+
+            # Horizontal lines
             pygame.draw.line(win, GREY, (j * gap, 0), (j * gap, width))
 
 
-# Function that update the current grid with the Tile class.
+# Main draw function that draws the grid with help of the Tile class.
 def draw(win, grid, rows, width):
-    win.fill(WHITE)
+    win.fill(WHITE)  # Fill entire window with WHITE
     for row in grid:
         for tile in row:
             tile.draw(win)
 
+    # Draw gridlines on top.
     draw_grid(win, rows, width)
     pygame.display.update()
 
 
 # Returns the coordinates that are clicked.
 def mouse_clicked_position(pos, row, width):
-    gap = width // row
+    gap = width // row  # width of each cube
     y, x = pos
     row = y // gap
     col = x // gap
