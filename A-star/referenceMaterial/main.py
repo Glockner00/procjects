@@ -72,8 +72,21 @@ class Tile:
         pygame.draw.rect(win, self.color, (self.x, self.y,
                                            self.width, self.width))
 
+    # Check if neighbours are barriers or not.
     def update_neighbours(self, grid):
-        pass
+        self.neighbours = []
+        # Down
+        if self.row < self.total_rows - 1 and not grid[self.row + 1][self.col].is_barrier():
+            self.neighbours.append(grid[self.row + 1][self.col])
+        # Up
+        if self.row > 0 and not grid[self.row - 1][self.col].is_barrier():
+            self.neighbours.append(grid[self.row - 1][self.col])
+        # Left
+        if self.col > 0 and not grid[self.row][self.col - 1].is_barrier():
+            self.neighbours.append(grid[self.row][self.col - 1])
+        # Right
+        if self.col < self.total_rows - 1 and not grid[self.row][self.col + 1].is_barrier():
+            self.neighbours.append(grid[self.row][self.col + 1])
 
     # "less than", compares lt tile and other tile.
     # The other tile is always going to be greater than lt:s tile
@@ -83,7 +96,65 @@ class Tile:
 
 # Main algorithm.
 def a_star(draw, grid, start, end):
-    pass
+    count = 0  # Keeps track of the queue
+    open_set = PriorityQueue()
+    # Adding the start node with the original f-score (which is zero)
+    open_set.put((0, count, start))
+    came_from = {}  # keeps track of which node we came from
+
+    # a table with a uniqe key for every tile.
+    g_score = {tile: float("inf") for row in grid for tile in row}
+    g_score[start] = 0  # start nodes g score.
+
+    # a table with a uniqe key for every tile.
+    f_score = {tile: float("inf") for row in grid for tile in row}
+    # Heuristic, makes an estimate how far the end node is from the start node.
+    f_score[start] = h(start.get_pos(), end.get_pos())  # start nodes f score.
+
+    # keeps track of all the items in/not in the PriorityQueue
+    open_set_hash = {start}  # set
+
+    # if the set i empty we have checked all the possible node.
+    while not open_set.empty():
+        for event in pygame.event.get():
+            #  A way of exiting the algorithm.
+            if event.type == pygame.QUIT:
+                pygame.quit()
+
+        # if we get the same f score we will instead look at the count
+        # (PriorityQueue).
+        current = open_set.get()[2]  # the node.
+
+        # take the node that poped of the PriorityQueue and sync the hash.
+        # ensures that there are no duplicates.
+        open_set_hash.remove(current)
+
+        if current == end:  # path found.
+            path(came_from, end, draw)
+            return True
+
+        # all edges are 1, neighbours g_score -> distance to current node
+        # (currently known shortest distance) and add 1
+        for neighbour in current.neighbours:
+            temp_g_score = g_score[current] + 1
+
+            # Found a shorter way
+            if temp_g_score < g_score[neighbour]:
+                came_from[neighbour] = current
+                g_score[neighbour] = temp_g_score
+                f_score[neighbour] = temp_g_score + h(neighbour.get_pos(),
+                                                      end.get_pos())
+                if neighbour not in open_set_hash:
+                    count += 1
+                    open_set.put((f_score[neighbour], count, neighbour))
+                    open_set_hash.add(neighbour)
+                    neighbour.make_open()
+
+        draw()
+
+        if current != start:
+            current.make_closed()
+    return False
 
 
 # Heuristic function for the main algorithm.
@@ -95,8 +166,11 @@ def h(p1, p2):
 
 
 # Reconstruct the path.
-def path(prev_tile, current_tile, draw):
-    pass
+def path(came_from, current_tile, draw):
+    while current_tile in came_from:
+        current_tile = came_from[current_tile]
+        current_tile.make_path()
+        draw()
 
 
 # Make an empty grid. without grid lines.
@@ -195,6 +269,16 @@ def main(win, width):
                 elif tile == end:
                     end = None
 
+            # Key down, start algorithm
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE and start and end:
+                    for row in grid:
+                        for tile in row:
+                            tile.update_neighbours(grid)
+                    # Lambda calls an anonymous function
+                    # Allows for calling this specifik draw in a_star.
+                    a_star(lambda: draw(win, grid, ROWS, width),
+                           grid, start, end)
     pygame.QUIT
 
 
