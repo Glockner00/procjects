@@ -1,4 +1,5 @@
 import pygame
+import Maze
 from Maze import generateMaze, Cell
 import random
 
@@ -34,12 +35,15 @@ def drawMaze(WIN, maze: list):
             if cell.walls[0]:
                 pygame.draw.line(WIN, BLACK, (cellX, cellY), (cellX + CELL_SIZE, cellY))
             
+            #RIGHT
             if cell.walls[1]:
                 pygame.draw.line(WIN, BLACK, (cellX + CELL_SIZE, cellY), (cellX + CELL_SIZE, cellY + CELL_SIZE))
             
+            #BOTTOM
             if cell.walls[2]:
                 pygame.draw.line(WIN, BLACK, (cellX, cellY + CELL_SIZE), (cellX + CELL_SIZE, cellY + CELL_SIZE))
             
+            #LEFT
             if cell.walls[3]:
                 pygame.draw.line(WIN, BLACK, (cellX , cellY), (cellX, cellY + CELL_SIZE))
 
@@ -50,6 +54,11 @@ def drawMaze(WIN, maze: list):
                 pygame.draw.circle(WIN, PURPLE, (cellX + CELL_SIZE//2, cellY + CELL_SIZE //2), CELL_SIZE//4) 
 
         pygame.display.update()
+
+
+def h():
+    pass
+
 
 def main():
     print("MAZE DIMENSIONS")

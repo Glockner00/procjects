@@ -1,4 +1,14 @@
 import random
+import pygame
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (28, 134, 238)
+YELLOW = (255, 255, 0)
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+PURPLE = (128, 0, 128)
+GREY = (128, 128, 128)
+
 
 class Cell:
     def __init__(self, x, y):
@@ -8,6 +18,32 @@ class Cell:
         self.walls = [True, True, True, True] #top, right, bottom, left
         self.start = False
         self.end = False
+        self.color = WHITE
+
+    def makeOpen(self):
+        self.color = GREEN
+
+       # Check if neighbours are barriers or not.
+    def update_neighbours(self, maze: list, total_rows: int) -> list:
+        self.neighbors = []
+        # Down
+        if self.x < total_rows and not self.walls[1]:            
+            self.neighbors.append(maze[self.x + 1][self.y])
+        # Up
+        if self.x > 0 and not self.walls[3]:
+            self.neighbors.append(maze[self.x - 1][self.y])
+        # Left
+        if self.x > 0 and not self.walls[2]:
+            self.neighbors.append(maze[self.x][self.y - 1])
+        # Right
+        #if self.x < total_rows and not self.walls[0]:
+         #   self.neighbors.append(maze[self.x][self.y + 1])
+        
+        return self.neighbors
+    
+    def draw(self, win):
+        pygame.draw.rect(win, self.color, (self.x, self.y, CELL_SIZE, CELL_SIZE))
+        pygame.display.update()
 
 
 def generateMaze(w: int, h: int) -> list:
@@ -63,3 +99,96 @@ def getUnvisitedNeighbors(maze: list, cell: Cell) -> list:
     # return neigbors that ar not visited yet. 
     return [neighbor for neighbor in neighbors if not neighbor.visited]
 
+
+CELL_SIZE = 35
+CLOCK = pygame.time.Clock()
+
+
+def makeStartEnd(maze: list):
+    run = True
+    while run:
+        startX, startY = random.randint(0, len(maze) -1), random.randint(0, len(maze) - 1)
+        endX, endY = random.randint(0, len(maze) -1), random.randint(0, len(maze) - 1)
+        if maze[startX][startY] != maze[endX][endY]:
+            maze[startX][startY].start = True
+            maze[endX][endY].end = True
+            run = False
+
+
+def drawMaze(WIN, maze: list):
+    WIN.fill(WHITE)
+    for x in range(len(maze)):
+        for y in range(len(maze[x])):
+            cell = maze[x][y]
+           
+            cellX, cellY = x * CELL_SIZE, y * CELL_SIZE
+            
+            #TOP
+            if cell.walls[0]:
+                pygame.draw.line(WIN, BLACK, (cellX, cellY), (cellX + CELL_SIZE, cellY))
+            
+            #RIGHT
+            if cell.walls[1]:
+                pygame.draw.line(WIN, BLACK, (cellX + CELL_SIZE, cellY), (cellX + CELL_SIZE, cellY + CELL_SIZE))
+            
+            #BOTTOM
+            if cell.walls[2]:
+                pygame.draw.line(WIN, BLACK, (cellX, cellY + CELL_SIZE), (cellX + CELL_SIZE, cellY + CELL_SIZE))
+            
+            #LEFT
+            if cell.walls[3]:
+                pygame.draw.line(WIN, BLACK, (cellX , cellY), (cellX, cellY + CELL_SIZE))
+
+            if cell.start: 
+                pygame.draw.circle(WIN, GREEN, (cellX + CELL_SIZE//2, cellY + CELL_SIZE //2), CELL_SIZE//4)
+            
+            if cell.end:
+                pygame.draw.circle(WIN, PURPLE, (cellX + CELL_SIZE//2, cellY + CELL_SIZE //2), CELL_SIZE//4) 
+
+        pygame.display.update()
+
+
+def h():
+    pass
+
+
+def drawAlgo(maze: list, neighbors: list, win):
+    for row in maze:
+        for cell in row:
+            if cell in neighbors:
+                cell.makeOpen()
+                cell.draw(win)
+def main():
+    print("MAZE DIMENSIONS")
+    print("===============")
+    x = int(input("x: "))
+    y = int(input("y: "))
+
+    HEIGHT = x * CELL_SIZE
+    WIDTH = y * CELL_SIZE
+    WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+
+    maze = generateMaze(x, y)
+    makeStartEnd(maze)
+
+    pygame.init()
+    run = True
+    while run: 
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+
+
+        drawMaze(WIN, maze)
+            # TEST
+        for x in range(len(maze)):
+            for y in range(len(maze[x])):
+                cell = maze[x][y]
+                if cell.start:
+                    neigbors = cell.update_neighbours(maze, 20)
+                    drawAlgo(maze, neigbors, WIN)   
+
+        CLOCK.tick(1)
+    pygame.quit()
+
+main()
