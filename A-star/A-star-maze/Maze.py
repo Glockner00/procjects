@@ -39,10 +39,10 @@ class Cell:
         if self.x<len(maze) - 1 and not (maze[self.x+1][self.y].walls[3] and maze[self.x][self.y].walls[1]):
             neighbors.append(maze[self.x+1][self.y])
         # DOWN
-        if self.y>0 and not (maze[self.x][self.y-1].walls[0] and maze[self.x][self.y].walls[2]):
+        if self.y>0 and not (maze[self.x][self.y-1].walls[2] and maze[self.x][self.y].walls[0]):
             neighbors.append(maze[self.x][self.y-1])
         # UP
-        if self.y<len(maze[0]) - 1 and not (maze[self.x][self.y+1].walls[2] and maze[self.x][self.y].walls[1]):
+        if self.y<len(maze[0]) - 1 and not (maze[self.x][self.y+1].walls[0] and maze[self.x][self.y].walls[2]):
             neighbors.append(maze[self.x][self.y+1])
 
         return neighbors
