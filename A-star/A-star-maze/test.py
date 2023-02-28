@@ -1,5 +1,8 @@
 import random
 import pygame
+from queue import PriorityQueue
+
+# CONSTANTS
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (28, 134, 238)
@@ -8,6 +11,10 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 PURPLE = (128, 0, 128)
 GREY = (128, 128, 128)
+
+CELL_SIZE = 35
+CLOCK = pygame.time.Clock()
+
 
 class Cell:
     def __init__(self, x, y):
@@ -25,25 +32,22 @@ class Cell:
     # Check if neighbours have barriers between them or not and returns the neighbors that have not.
     def update_neighbours(self, maze: list) -> list:
         neighbors = []
-        
         #LEFT 
         if self.x>0 and not (maze[self.x-1][self.y].walls[1] and maze[self.x][self.y].walls[3]):
             neighbors.append(maze[self.x-1][self.y])
-
         #RIGHT
         if self.x<len(maze) - 1 and not (maze[self.x+1][self.y].walls[3] and maze[self.x][self.y].walls[1]):
             neighbors.append(maze[self.x+1][self.y])
-        
         # DOWN
         if self.y>0 and not (maze[self.x][self.y-1].walls[0] and maze[self.x][self.y].walls[2]):
             neighbors.append(maze[self.x][self.y-1])
-
         # UP
         if self.y<len(maze[0]) - 1 and not (maze[self.x][self.y+1].walls[2] and maze[self.x][self.y].walls[1]):
             neighbors.append(maze[self.x][self.y+1])
 
         return neighbors
     
+    # For drawing the path of the algorithm.
     def draw(self, win):
         cellX, cellY = self.x * CELL_SIZE, self.y * CELL_SIZE
         pygame.draw.circle(win, YELLOW, (cellX + CELL_SIZE//2, cellY + CELL_SIZE //2), CELL_SIZE//4) 
@@ -71,6 +75,7 @@ def generateMaze(w: int, h: int) -> list:
 
     return maze
 
+# Removes walls between two cells.
 def removeWall(current: Cell, choice: Cell):
     if current.x == choice.x:
         if current.y>choice.y:
@@ -87,10 +92,11 @@ def removeWall(current: Cell, choice: Cell):
             current.walls[1] = False
             choice.walls[3] = False
 
+
+# return neigbors that ar not visited yet.
 def getUnvisitedNeighbors(maze: list, cell: Cell) -> list:
     neighbors = []
     x, y = cell.x, cell.y
-    
     if x>0:
         neighbors.append(maze[x-1][y])
     if x<len(maze) - 1:
@@ -100,14 +106,10 @@ def getUnvisitedNeighbors(maze: list, cell: Cell) -> list:
     if y<len(maze[0]) - 1:
         neighbors.append(maze[x][y+1])
 
-    # return neigbors that ar not visited yet. 
     return [neighbor for neighbor in neighbors if not neighbor.visited]
 
 
-CELL_SIZE = 35
-CLOCK = pygame.time.Clock()
-
-
+# A random starting point and end point
 def makeStartEnd(maze: list):
     run = True
     while run:
@@ -124,21 +126,17 @@ def drawMaze(WIN, maze: list):
     for x in range(len(maze)):
         for y in range(len(maze[x])):
             cell = maze[x][y]
-           
             cellX, cellY = x * CELL_SIZE, y * CELL_SIZE
             
             #TOP
             if cell.walls[0]:
                 pygame.draw.line(WIN, BLACK, (cellX, cellY), (cellX + CELL_SIZE, cellY))
-            
             #RIGHT
             if cell.walls[1]:
                 pygame.draw.line(WIN, BLACK, (cellX + CELL_SIZE, cellY), (cellX + CELL_SIZE, cellY + CELL_SIZE))
-            
             #BOTTOM
             if cell.walls[2]:
                 pygame.draw.line(WIN, BLACK, (cellX, cellY + CELL_SIZE), (cellX + CELL_SIZE, cellY + CELL_SIZE))
-            
             #LEFT
             if cell.walls[3]:
                 pygame.draw.line(WIN, BLACK, (cellX , cellY), (cellX, cellY + CELL_SIZE))
@@ -148,20 +146,31 @@ def drawMaze(WIN, maze: list):
             
             if cell.end:
                 pygame.draw.circle(WIN, PURPLE, (cellX + CELL_SIZE//2, cellY + CELL_SIZE //2), CELL_SIZE//4) 
-
         pygame.display.update()
 
 
-def h():
+#Returns the heuristic value between two cells.
+def h(p1, p2)-> int:
+    x1, y1 = p1
+    x2, y2 = p2
+    return abs(x2 - x1) + abs(y2 - y1)
+
+# Visualize the path of the algorithm
+def reconstructPath():
+    pass
+
+def aStar():
     pass
 
 
+# TESTING FUNCTION
 def drawAlgo(maze: list, neighbors: list, win):
     for row in maze:
         for cell in row:
             if cell in neighbors:
                 cell.makeOpen()
                 cell.draw(win)
+
 def main():
     print("MAZE DIMENSIONS")
     print("===============")
