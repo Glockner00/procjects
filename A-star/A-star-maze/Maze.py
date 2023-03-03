@@ -25,33 +25,46 @@ class Cell:
         self.start = False
         self.end = False
         self.color = WHITE
+        self.neighbors = []
 
     def makeOpen(self):
         self.color = GREEN
 
+    def make_path(self):
+        self.color = GREY
+
+    def make_closed(self):
+        self.color = BLACK 
+
     # Check if neighbours have barriers between them or not and returns the neighbors that have not.
     def update_neighbours(self, maze: list) -> list:
-        neighbors = []
         #LEFT 
         if self.x>0 and not (maze[self.x-1][self.y].walls[1] and maze[self.x][self.y].walls[3]):
-            neighbors.append(maze[self.x-1][self.y])
+            self.neighbors.append(maze[self.x-1][self.y])
         #RIGHT
         if self.x<len(maze) - 1 and not (maze[self.x+1][self.y].walls[3] and maze[self.x][self.y].walls[1]):
-            neighbors.append(maze[self.x+1][self.y])
+            self.neighbors.append(maze[self.x+1][self.y])
         # DOWN
         if self.y>0 and not (maze[self.x][self.y-1].walls[2] and maze[self.x][self.y].walls[0]):
-            neighbors.append(maze[self.x][self.y-1])
+            self.neighbors.append(maze[self.x][self.y-1])
         # UP
         if self.y<len(maze[0]) - 1 and not (maze[self.x][self.y+1].walls[0] and maze[self.x][self.y].walls[2]):
-            neighbors.append(maze[self.x][self.y+1])
+            self.neighbors.append(maze[self.x][self.y+1])
 
-        return neighbors
+        return self.neighbors
     
     # For drawing the path of the algorithm.
     def draw(self, win):
         cellX, cellY = self.x * CELL_SIZE, self.y * CELL_SIZE
         pygame.draw.circle(win, YELLOW, (cellX + CELL_SIZE//2, cellY + CELL_SIZE //2), CELL_SIZE//4) 
         pygame.display.update()
+
+    def get_pos(self):
+        return self.x, self.y
+
+    def __lt__(self, other):
+        return False
+        
 
 
 def generateMaze(w: int, h: int) -> list:
@@ -155,12 +168,87 @@ def h(p1, p2)-> int:
     x2, y2 = p2
     return abs(x2 - x1) + abs(y2 - y1)
 
-# Visualize the path of the algorithm
-def reconstructPath():
-    pass
+def aStar(maze: list, drawMaze, win):
+    start, end = Cell, Cell
+    for x in range(len(maze)):
+        for y in range(len(maze[x])):
+            cell = maze[x][y]
+            if cell.start:
+                start = cell
+            if cell.end:
+                end = cell
 
-def aStar():
-    pass
+    count = 0  # Keeps track of the queue
+    open_set = PriorityQueue()
+    # Adding the start node with the original f-score (which is zero)
+    open_set.put((0, count, start))
+    came_from = {}  # keeps track of which node we came from
+
+    # a table with a uniqe key for every tile.
+    g_score = {cell: float("inf") for row in maze for cell in row}
+    g_score[start] = 0  # start nodes g score.
+
+    # a table with a uniqe key for every tile.
+    f_score = {cell: float("inf") for row in maze for cell in row}
+    # Heuristic, makes an estimate how far the end node is from the start node.
+    f_score[start] = h(start.get_pos(), end.get_pos())  # start nodes f score.
+    print(f_score[start])
+
+    # keeps track of all the items in/not in the PriorityQueue
+    open_set_hash = {start}  # set
+
+        # if the set i empty we have checked all the possible node.
+    while not open_set.empty():
+        for event in pygame.event.get():
+            #  A way of exiting the algorithm.
+            if event.type == pygame.QUIT:
+                pygame.quit()
+
+        # if we get the same f score we will instead look at the count
+        # (PriorityQueue).
+        current = open_set.get()[2]  # the node.
+
+        # take the node that poped of the PriorityQueue and sync the hash.
+        # ensures that there are no duplicates.
+        open_set_hash.remove(current)
+
+        if current == end:  # path found.
+            path(came_from, end, drawMaze, win)
+            return True
+
+        # all edges are 1, neighbours g_score -> distance to current node
+        # (currently known shortest distance) and add 1
+        for neighbour in current.neighbors:
+            temp_g_score = g_score[current] + 1
+
+            # Found a shorter way
+            if temp_g_score < g_score[neighbour]:
+                came_from[neighbour] = current
+                g_score[neighbour] = temp_g_score
+                f_score[neighbour] = temp_g_score + h(neighbour.get_pos(),
+                                                      end.get_pos())
+                if neighbour not in open_set_hash:
+                    count += 1
+                    open_set.put((f_score[neighbour], count, neighbour))
+                    open_set_hash.add(neighbour)
+                    neighbour.makeOpen()
+                    neighbour.draw(win)
+
+        drawMaze()
+        
+
+        if current != start:
+            current.make_closed()
+    return False
+
+# Reconstruct the path.
+def path(came_from: list, current_tile: Cell, drawMaze, win):
+    while current_tile in came_from:
+        current_tile = came_from[current_tile]
+        current_tile.make_path()
+        current_tile.draw(win)
+    
+
 
 
 # TESTING FUNCTION
@@ -187,21 +275,18 @@ def main():
     pygame.init()
     run = True
     while run: 
+        drawMaze(WIN, maze)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
 
-
-        drawMaze(WIN, maze)
-            # TEST
-        for x in range(len(maze)):
-            for y in range(len(maze[x])):
-                cell = maze[x][y]
-                if cell.start:
-                    neighbors = cell.update_neighbours(maze)
-                    print(neighbors[0].x)
-                    print(cell.x)
-                    drawAlgo(maze, neighbors, WIN)   
+        # Key down, start algorithm
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    for row in maze:
+                        for cell in row:
+                            cell.update_neighbours(maze)
+                    aStar(maze, lambda: drawMaze(WIN, maze), WIN)
 
         CLOCK.tick(1)
     pygame.quit()
