@@ -124,17 +124,6 @@ def getUnvisitedNeighbors(maze: list, cell: Cell) -> list:
 
     return [neighbor for neighbor in neighbors if not neighbor.visited]
 
-# A random start and end point.
-def makeStartEnd(maze: list):
-    run = True
-    while run:
-        startX, startY = random.randint(0, len(maze) -1), random.randint(0, len(maze) - 1)
-        endX, endY = random.randint(0, len(maze) -1), random.randint(0, len(maze) - 1)
-        if maze[startX][startY] != maze[endX][endY]:
-            maze[startX][startY].start = True
-            maze[endX][endY].end = True
-            run = False
-
 # Drawing lines.
 def drawMaze(WIN, maze: list):
     for x in range(len(maze)):
@@ -170,12 +159,30 @@ def draw(win, maze : list):
 
     drawMaze(win, maze)
     pygame.display.update()
+
+# A random start and end point.
+def makeStartEnd(maze: list):
+    run = True
+    while run:
+        startX, startY = random.randint(0, len(maze) -1), random.randint(0, len(maze) - 1)
+        endX, endY = random.randint(0, len(maze) -1), random.randint(0, len(maze) - 1)
+        if maze[startX][startY] != maze[endX][endY]:
+            maze[startX][startY].start = True
+            maze[endX][endY].end = True
+            run = False
     
 #Returns the heuristic value between two cells.
 def h(p1, p2)-> int:
     x1, y1 = p1
     x2, y2 = p2
     return abs(x2 - x1) + abs(y2 - y1)
+
+# Reconstruct the path of A*
+def path(came_from: list, current_tile: Cell, draw, win):
+    while current_tile in came_from:
+        current_tile = came_from[current_tile]
+        current_tile.make_path()
+        draw()
 
 # A-star Algorithm.
 def aStar(maze: list, draw, win):
@@ -247,13 +254,6 @@ def aStar(maze: list, draw, win):
         if current != start:
             current.make_closed()
     return False
-
-# Reconstruct the path.
-def path(came_from: list, current_tile: Cell, draw, win):
-    while current_tile in came_from:
-        current_tile = came_from[current_tile]
-        current_tile.make_path()
-        draw()
 
 def main():
     print("MAZE DIMENSIONS")
