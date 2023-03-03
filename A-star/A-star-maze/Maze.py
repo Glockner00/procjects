@@ -13,7 +13,6 @@ PURPLE = (128, 0, 128)
 GREY = (128, 128, 128)
 
 CELL_SIZE = 35
-CLOCK = pygame.time.Clock()
 
 
 class Cell:
@@ -31,7 +30,7 @@ class Cell:
         self.color = GREEN
 
     def make_path(self):
-        self.color = GREY
+        self.color = BLUE
 
     def make_closed(self):
         self.color = BLACK 
@@ -56,8 +55,7 @@ class Cell:
     # For drawing the path of the algorithm.
     def draw(self, win):
         cellX, cellY = self.x * CELL_SIZE, self.y * CELL_SIZE
-        pygame.draw.circle(win, YELLOW, (cellX + CELL_SIZE//2, cellY + CELL_SIZE //2), CELL_SIZE//4) 
-        pygame.display.update()
+        pygame.draw.circle(win, self.color, (cellX + CELL_SIZE//2, cellY + CELL_SIZE //2), CELL_SIZE//4) 
 
     def get_pos(self):
         return self.x, self.y
@@ -159,8 +157,15 @@ def drawMaze(WIN, maze: list):
             
             if cell.end:
                 pygame.draw.circle(WIN, PURPLE, (cellX + CELL_SIZE//2, cellY + CELL_SIZE //2), CELL_SIZE//4) 
-        pygame.display.update()
 
+def draw(win, maze : list):
+    win.fill(WHITE)
+    for row in maze:
+        for cell in row:
+            cell.draw(win)
+    
+    drawMaze(win, maze)
+    pygame.display.update()
 
 #Returns the heuristic value between two cells.
 def h(p1, p2)-> int:
@@ -168,7 +173,7 @@ def h(p1, p2)-> int:
     x2, y2 = p2
     return abs(x2 - x1) + abs(y2 - y1)
 
-def aStar(maze: list, drawMaze, win):
+def aStar(maze: list, draw, win):
     start, end = Cell, Cell
     for x in range(len(maze)):
         for y in range(len(maze[x])):
@@ -192,7 +197,6 @@ def aStar(maze: list, drawMaze, win):
     f_score = {cell: float("inf") for row in maze for cell in row}
     # Heuristic, makes an estimate how far the end node is from the start node.
     f_score[start] = h(start.get_pos(), end.get_pos())  # start nodes f score.
-    print(f_score[start])
 
     # keeps track of all the items in/not in the PriorityQueue
     open_set_hash = {start}  # set
@@ -213,7 +217,7 @@ def aStar(maze: list, drawMaze, win):
         open_set_hash.remove(current)
 
         if current == end:  # path found.
-            path(came_from, end, drawMaze, win)
+            path(came_from, end, draw, win)
             return True
 
         # all edges are 1, neighbours g_score -> distance to current node
@@ -233,8 +237,7 @@ def aStar(maze: list, drawMaze, win):
                     open_set_hash.add(neighbour)
                     neighbour.makeOpen()
                     neighbour.draw(win)
-
-        drawMaze()
+        draw()
         
 
         if current != start:
@@ -242,22 +245,11 @@ def aStar(maze: list, drawMaze, win):
     return False
 
 # Reconstruct the path.
-def path(came_from: list, current_tile: Cell, drawMaze, win):
+def path(came_from: list, current_tile: Cell, draw, win):
     while current_tile in came_from:
         current_tile = came_from[current_tile]
         current_tile.make_path()
-        current_tile.draw(win)
-    
-
-
-
-# TESTING FUNCTION
-def drawAlgo(maze: list, neighbors: list, win):
-    for row in maze:
-        for cell in row:
-            if cell in neighbors:
-                cell.makeOpen()
-                cell.draw(win)
+        draw()
 
 def main():
     print("MAZE DIMENSIONS")
@@ -272,10 +264,10 @@ def main():
     maze = generateMaze(x, y)
     makeStartEnd(maze)
 
-    pygame.init()
     run = True
+
     while run: 
-        drawMaze(WIN, maze)
+        draw(WIN, maze)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -286,9 +278,7 @@ def main():
                     for row in maze:
                         for cell in row:
                             cell.update_neighbours(maze)
-                    aStar(maze, lambda: drawMaze(WIN, maze), WIN)
-
-        CLOCK.tick(1)
+                    aStar(maze, lambda: draw(WIN, maze), WIN)
     pygame.quit()
 
 main()
