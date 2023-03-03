@@ -1,15 +1,17 @@
 """
 @author Axel Glöckner
 
-This program generates a random maze Using a deep first search algorithm
+This program generates a random maze Using a deep first search algorithm.
 where the shortest way/solution to the maze is found with the A* algorithm.
 The A* algorithm is vizulised with pygame.
 
 CELL COLOR CODING:
-GREEN : Start and end points
-BLUE : Shortest way
-RED : Closed cell (checked)
-YELLOW : Open cell (unchecked)
+GREEN : Start and end points.
+BLUE : Shortest way / the solution to the maze.
+RED : Closed cell (checked).
+YELLOW : Open cell (unchecked).
+
+Enter SPACE to start the search.
 """
 
 import random
@@ -66,7 +68,7 @@ class Cell:
 
         return self.neighbors
     
-    # For drawing the path of the algorithm.
+    # For drawing a single cell.
     def draw(self, win):
         cellX, cellY = self.x * CELL_SIZE, self.y * CELL_SIZE
         pygame.draw.circle(win, self.color, (cellX + CELL_SIZE//2, cellY + CELL_SIZE //2), CELL_SIZE//4) 
@@ -150,7 +152,7 @@ def drawMaze(WIN, maze: list):
             if cell.end:
                 pygame.draw.circle(WIN, GREEN, (cellX + CELL_SIZE//2, cellY + CELL_SIZE //2), CELL_SIZE//4) 
 
-# Draw a cells color 
+# Draw all cells and the maze on top. 
 def draw(win, maze : list):
     win.fill(BLACK)
     for row in maze:
@@ -285,5 +287,6 @@ def main():
                             cell.update_neighbours(maze)
                     aStar(maze, lambda: draw(WIN, maze), WIN)
     pygame.quit()
+
 
 main()
