@@ -1,3 +1,17 @@
+"""
+@author Axel Glöckner
+
+This program generates a random maze Using a deep first search algorithm
+where the shortest way/solution to the maze is found with the A* algorithm.
+The A* algorithm is vizulised with pygame.
+
+CELL COLOR CODING:
+GREEN : Start and end points
+BLUE : Shortest way
+RED : Closed cell (checked)
+YELLOW : Open cell (unchecked)
+"""
+
 import random
 import pygame
 from queue import PriorityQueue
@@ -9,20 +23,9 @@ BLUE = (28, 134, 238)
 YELLOW = (255, 255, 0)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-PURPLE = (128, 0, 128)
-GREY = (128, 128, 128)
-
 CELL_SIZE = 15
 
-"""
-COLOR CODING:
-PURPLE : End point
-GREEN : Start point
-BLUE : Shortest way
-BLACK : Closed cell
-YELLOW : Open cell
-"""
-
+# A class that represents a single Cell in the maze.
 class Cell:
     def __init__(self, x, y):
         self.x = x
@@ -42,12 +45,6 @@ class Cell:
 
     def make_closed(self):
         self.color = RED
-
-    def make_start(self):
-        self.color = GREEN
-    
-    def make_end(self):
-        self.color = GREEN
     
     def get_pos(self):
         return self.x, self.y
@@ -112,7 +109,6 @@ def removeWall(current: Cell, choice: Cell):
             current.walls[1] = False
             choice.walls[3] = False
 
-
 # return neigbors that ar not visited yet.
 def getUnvisitedNeighbors(maze: list, cell: Cell) -> list:
     neighbors = []
@@ -128,8 +124,7 @@ def getUnvisitedNeighbors(maze: list, cell: Cell) -> list:
 
     return [neighbor for neighbor in neighbors if not neighbor.visited]
 
-
-# A random starting point and end point
+# A random start and end point.
 def makeStartEnd(maze: list):
     run = True
     while run:
@@ -139,7 +134,6 @@ def makeStartEnd(maze: list):
             maze[startX][startY].start = True
             maze[endX][endY].end = True
             run = False
-
 
 # Drawing lines.
 def drawMaze(WIN, maze: list):
@@ -167,7 +161,6 @@ def drawMaze(WIN, maze: list):
             if cell.end:
                 pygame.draw.circle(WIN, GREEN, (cellX + CELL_SIZE//2, cellY + CELL_SIZE //2), CELL_SIZE//4) 
 
-
 # Draw a cells color 
 def draw(win, maze : list):
     win.fill(BLACK)
@@ -178,8 +171,6 @@ def draw(win, maze : list):
     drawMaze(win, maze)
     pygame.display.update()
     
-    
-
 #Returns the heuristic value between two cells.
 def h(p1, p2)-> int:
     x1, y1 = p1
@@ -215,7 +206,7 @@ def aStar(maze: list, draw, win):
     # keeps track of all the items in/not in the PriorityQueue
     open_set_hash = {start}  # set
 
-        # if the set i empty we have checked all the possible node.
+    # if the set i empty we have checked all the possible node.
     while not open_set.empty():
         for event in pygame.event.get():
             #  A way of exiting the algorithm.
@@ -252,7 +243,6 @@ def aStar(maze: list, draw, win):
                     neighbour.makeOpen()
                     neighbour.draw(win)
             draw()
-        
 
         if current != start:
             current.make_closed()
@@ -287,7 +277,7 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
 
-        # Key down, start algorithm
+        # SPACE -> start algorithm
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     for row in maze:
