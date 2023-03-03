@@ -12,8 +12,16 @@ BLACK = (0, 0, 0)
 PURPLE = (128, 0, 128)
 GREY = (128, 128, 128)
 
-CELL_SIZE = 35
+CELL_SIZE = 15
 
+"""
+COLOR CODING:
+PURPLE : End point
+GREEN : Start point
+BLUE : Shortest way
+BLACK : Closed cell
+YELLOW : Open cell
+"""
 
 class Cell:
     def __init__(self, x, y):
@@ -23,17 +31,26 @@ class Cell:
         self.walls = [True, True, True, True] #top, right, bottom, left
         self.start = False
         self.end = False
-        self.color = WHITE
+        self.color = BLACK
         self.neighbors = []
 
     def makeOpen(self):
-        self.color = GREEN
+        self.color = YELLOW
 
     def make_path(self):
         self.color = BLUE
 
     def make_closed(self):
-        self.color = BLACK 
+        self.color = RED
+
+    def make_start(self):
+        self.color = GREEN
+    
+    def make_end(self):
+        self.color = GREEN
+    
+    def get_pos(self):
+        return self.x, self.y
 
     # Check if neighbours have barriers between them or not and returns the neighbors that have not.
     def update_neighbours(self, maze: list) -> list:
@@ -56,14 +73,6 @@ class Cell:
     def draw(self, win):
         cellX, cellY = self.x * CELL_SIZE, self.y * CELL_SIZE
         pygame.draw.circle(win, self.color, (cellX + CELL_SIZE//2, cellY + CELL_SIZE //2), CELL_SIZE//4) 
-
-    def get_pos(self):
-        return self.x, self.y
-
-    def __lt__(self, other):
-        return False
-        
-
 
 def generateMaze(w: int, h: int) -> list:
     maze = [[Cell(x,y) for y in range(h)] for x in range(w)] # a 2D array filled with cells
@@ -132,8 +141,8 @@ def makeStartEnd(maze: list):
             run = False
 
 
+# Drawing lines.
 def drawMaze(WIN, maze: list):
-    WIN.fill(WHITE)
     for x in range(len(maze)):
         for y in range(len(maze[x])):
             cell = maze[x][y]
@@ -141,31 +150,35 @@ def drawMaze(WIN, maze: list):
             
             #TOP
             if cell.walls[0]:
-                pygame.draw.line(WIN, BLACK, (cellX, cellY), (cellX + CELL_SIZE, cellY))
+                pygame.draw.line(WIN, WHITE, (cellX, cellY), (cellX + CELL_SIZE, cellY))
             #RIGHT
             if cell.walls[1]:
-                pygame.draw.line(WIN, BLACK, (cellX + CELL_SIZE, cellY), (cellX + CELL_SIZE, cellY + CELL_SIZE))
+                pygame.draw.line(WIN, WHITE, (cellX + CELL_SIZE, cellY), (cellX + CELL_SIZE, cellY + CELL_SIZE))
             #BOTTOM
             if cell.walls[2]:
-                pygame.draw.line(WIN, BLACK, (cellX, cellY + CELL_SIZE), (cellX + CELL_SIZE, cellY + CELL_SIZE))
+                pygame.draw.line(WIN, WHITE, (cellX, cellY + CELL_SIZE), (cellX + CELL_SIZE, cellY + CELL_SIZE))
             #LEFT
             if cell.walls[3]:
-                pygame.draw.line(WIN, BLACK, (cellX , cellY), (cellX, cellY + CELL_SIZE))
+                pygame.draw.line(WIN, WHITE, (cellX , cellY), (cellX, cellY + CELL_SIZE))
 
             if cell.start: 
                 pygame.draw.circle(WIN, GREEN, (cellX + CELL_SIZE//2, cellY + CELL_SIZE //2), CELL_SIZE//4)
             
             if cell.end:
-                pygame.draw.circle(WIN, PURPLE, (cellX + CELL_SIZE//2, cellY + CELL_SIZE //2), CELL_SIZE//4) 
+                pygame.draw.circle(WIN, GREEN, (cellX + CELL_SIZE//2, cellY + CELL_SIZE //2), CELL_SIZE//4) 
 
+
+# Draw a cells color 
 def draw(win, maze : list):
-    win.fill(WHITE)
+    win.fill(BLACK)
     for row in maze:
         for cell in row:
             cell.draw(win)
-    
+
     drawMaze(win, maze)
     pygame.display.update()
+    
+    
 
 #Returns the heuristic value between two cells.
 def h(p1, p2)-> int:
@@ -173,6 +186,7 @@ def h(p1, p2)-> int:
     x2, y2 = p2
     return abs(x2 - x1) + abs(y2 - y1)
 
+# A-star Algorithm.
 def aStar(maze: list, draw, win):
     start, end = Cell, Cell
     for x in range(len(maze)):
@@ -237,7 +251,7 @@ def aStar(maze: list, draw, win):
                     open_set_hash.add(neighbour)
                     neighbour.makeOpen()
                     neighbour.draw(win)
-        draw()
+            draw()
         
 
         if current != start:
@@ -268,6 +282,7 @@ def main():
 
     while run: 
         draw(WIN, maze)
+        drawMaze(WIN, maze)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
